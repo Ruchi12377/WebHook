@@ -104,6 +104,11 @@ def webhook_handler():
         print(f'Error processing webhook: {e}')
         return Response('Internal server error', status=500)
 
+@app.route('/')
+def index():
+    """ルートパスへのアクセス時にAPIが起動中であることを示すメッセージを表示"""
+    return Response('Webhook API is running', status=200)
+
 if __name__ == '__main__':
     print(f"Webhook server listening on port {PORT}")
     print(f"Repository path: {REPO_PATH}")
