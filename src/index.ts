@@ -78,13 +78,13 @@ app.post('/webhook', async (req, res) => {
       `cd ${REPO_PATH}`,
       
       // 2. git pull の実行
-      `${REPO_PATH} && git pull`,
+      `git pull`,
       
       // 3. Pythonの仮想環境が存在しなければ作成
       `if [ ! -d "${VENV_PATH}" ]; then python3 -m venv ${VENV_PATH}; fi`,
       
       // 4. 仮想環境をアクティベートして依存関係をインストール
-      `cd ${REPO_PATH} && source ${VENV_PATH}/bin/activate && pip install -r requirements.txt`,
+      `source ${VENV_PATH}/bin/activate && pip install -r requirements.txt`,
       
       // 5. systemdサービスを再起動
       `sudo systemctl restart ${SERVICE_NAME}`
