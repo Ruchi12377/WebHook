@@ -1,14 +1,14 @@
 [Unit]
-Description=GitHub Webhook Server
+Description=GitHub Webhook Server (Flask)
 After=network.target
 
 [Service]
 Type=simple
 User=ruchi
 WorkingDirectory=/home/ruchi/WebHook
-ExecStart=/usr/bin/node /home/ruchi/WebHook/dist/index.js
+ExecStart=/home/ruchi/WebHook/venv/bin/python /home/ruchi/WebHook/app.py
 Restart=on-failure
-Environment=NODE_ENV=production
+Environment=PYTHONUNBUFFERED=1
 
 [Install]
 WantedBy=multi-user.target

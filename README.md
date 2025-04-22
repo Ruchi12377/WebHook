@@ -1,4 +1,4 @@
-# GitHub Webhook サーバー for Raspberry Pi
+# GitHub Webhook サーバー for Raspberry Pi (Flask版)
 
 このプロジェクトは、ラズベリーパイで動作する GitHub Webhook サーバーです。GitHub リポジトリへのプッシュを検知して、以下の処理を自動的に実行します：
 
@@ -9,10 +9,8 @@
 ## 必要要件
 
 - Raspberry Pi (Raspberry Pi OS)
-- Node.js (v12以上)
-- npm
+- Python 3.6以上 (venv モジュール)
 - Git
-- Python 3 (venv モジュール)
 - sudo 権限 (サービス再起動用)
 
 ## インストール方法
@@ -26,11 +24,8 @@ Raspberry Pi上で以下のコマンドを実行して、必要なシステム�
 sudo apt update
 sudo apt upgrade -y
 
-# Node.jsとnpmのインストール
-sudo apt install -y nodejs npm
-
 # Python 3とvenvモジュールのインストール
-sudo apt install -y python3 python3-venv
+sudo apt install -y python3 python3-venv python3-pip
 
 # Gitのインストール
 sudo apt install -y git
@@ -43,17 +38,17 @@ git clone https://github.com/Ruchi12377/webhook.git
 cd webhook
 ```
 
-### 3. Node.js依存関係のインストール
+### 3. Python仮想環境のセットアップと依存関係のインストール
 
 ```bash
-cd webhook
-npm install
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 これにより、以下の主要な依存関係がインストールされます：
-- express: Webhookサーバーの実装に使用
-- dotenv: 環境変数の管理
-- typescript: TypeScriptコンパイラ
+- Flask: Webhookサーバーの実装に使用
+- python-dotenv: 環境変数の管理
 
 ### 4. 環境変数の設定
 
@@ -67,13 +62,7 @@ VENV_PATH=/home/pi/your-project/venv
 SERVICE_NAME=your-service
 ```
 
-### 5. ビルド
-
-```bash
-npm run build
-```
-
-### 6. systemdサービスとしてインストール
+### 5. systemdサービスとしてインストール
 
 ```bash
 sudo cp webhook.service /etc/systemd/system/
@@ -110,7 +99,8 @@ Webhook サーバーをインストールして設定した後は、GitHub リ�
 開発時には以下のコマンドでサーバーを起動できます：
 
 ```bash
-npm run dev
+source venv/bin/activate
+python app.py
 ```
 
 ## ライセンス
