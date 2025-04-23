@@ -4,6 +4,7 @@ import json
 import hmac
 import hashlib
 import subprocess
+import threading
 from flask import Flask, request, Response
 from dotenv import load_dotenv
 
@@ -33,6 +34,17 @@ def execute_command(command):
     except subprocess.CalledProcessError as e:
         print(f"Error executing command: {e}")
         raise
+
+# バックグラウンドで処理を実行する関数
+def run_deployment_in_background(steps):
+    """デプロイメント処理をバックグラウンドで実行する"""
+    try:
+        for command in steps:
+            print(f"Executing: {command}")
+            execute_command(command)
+        print('Deployment completed successfully')
+    except Exception as e:
+        print(f'Deployment failed: {e}')
 
 # GitHub Webhookのシグネチャ検証
 def verify_signature(payload, signature):
@@ -72,7 +84,7 @@ def webhook_handler():
             print(f"Ignoring {event} event")
             return Response('Event ignored', status=200)
         
-        print('Received push event, processing deployment...')
+        print('Received push event, starting deployment in background...')
         
         # 処理のステップ
         steps = [
@@ -89,16 +101,13 @@ def webhook_handler():
             f"sudo systemctl restart {SERVICE_NAME}"
         ]
         
-        # コマンドを順番に実行
-        try:
-            for command in steps:
-                print(f"Executing: {command}")
-                execute_command(command)
-            print('Deployment completed successfully')
-            return Response('Deployment completed', status=200)
-        except Exception as e:
-            print(f'Deployment failed: {e}')
-            return Response('Deployment failed', status=500)
+        # バックグラウンドスレッドでデプロイメント処理を開始
+        deployment_thread = threading.Thread(target=run_deployment_in_background, args=(steps,))
+        deployment_thread.daemon = True
+        deployment_thread.start()
+        
+        # すぐにレスポンスを返す
+        return Response('Deployment started in background', status=202)
             
     except Exception as e:
         print(f'Error processing webhook: {e}')
