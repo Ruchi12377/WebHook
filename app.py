@@ -83,9 +83,12 @@ def webhook_handler():
             f"if [ ! -d '{VENV_PATH}' ]; then python3 -m venv {VENV_PATH}; fi",
             
             # 3. 仮想環境をアクティベートして依存関係をインストール
-            f"source {VENV_PATH}/bin/activate && pip install -r {REPO_PATH}/requirements.txt",
+            f"source {VENV_PATH}/bin/activate",
+
+            # 4. 依存関係のインストール
+            f"pip install -r {REPO_PATH}/requirements.txt",
             
-            # 4. systemdサービスを再起動
+            # 5. systemdサービスを再起動
             f"sudo systemctl restart {SERVICE_NAME}"
         ]
         
